@@ -1,6 +1,12 @@
+import pickle
 import torch
+import os
 from tensorflow import keras
 from transformers import AutoformerConfig, AutoformerForPrediction
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+GRU_DIR = os.path.join(BASE_DIR, 'models', 'gru')
+AUTOFORMER_DIR = os.path.join(BASE_DIR, 'models', 'autoformer')
 
 # Autoformer configuration constants
 LOOKBACK_HOURS = 336  # 14 days
@@ -19,12 +25,21 @@ LAGS_SEQUENCE = [1, 2, 3, 24, 48, 168, 336]
 def load_models():
     """Load both Keras GRU and PyTorch Autoformer models"""
     models = {}
+    scalers = {}
     
     # ===== Load GRU =====
     print("Loading GRU...")
-    models['gru'] = keras.models.load_model('models/gru.keras')
+    models['gru'] = keras.models.load_model(os.path.join(GRU_DIR, 'solar_gru_model.keras'))
     print("✓ GRU loaded successfully")
     
+    # Load the scalers that were saved during training
+    with open(os.path.join(GRU_DIR, 'weather_scaler.pkl'), 'rb') as f:
+        scalers['weather_scaler'] = pickle.load(f)
+    
+    with open(os.path.join(GRU_DIR, 'power_scaler.pkl'), 'rb') as f:
+        scalers['power_scaler'] = pickle.load(f)
+    
+
     # ===== Load Autoformer =====
     print("Loading Autoformer...")
     
@@ -75,4 +90,4 @@ def load_models():
     models['autoformer'] = autoformer
     print("✓ Autoformer loaded successfully")
     
-    return models
+    return models, scalers
