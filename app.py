@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 CORS(app)  # Allow requests from your React frontend
 
-models, scalers = load_models()
+models, scalers, climatology = load_models()
 
 @app.route('/api/predict', methods=['GET'])
 def predict():
@@ -17,7 +17,7 @@ def predict():
         data = fetch_data()
         
         # 2. Generate predictions using loaded models
-        predictions = generate_predictions(models, data, scalers)
+        predictions = generate_predictions(models, data, scalers, climatology)
         
         # 3. Return predictions
         return jsonify({

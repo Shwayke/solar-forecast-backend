@@ -26,6 +26,8 @@ def load_models():
     """Load both Keras GRU and PyTorch Autoformer models"""
     models = {}
     scalers = {}
+    climatology = {}
+
     
     # ===== Load GRU =====
     print("Loading GRU...")
@@ -89,5 +91,26 @@ def load_models():
     
     models['autoformer'] = autoformer
     print("✓ Autoformer loaded successfully")
+
+    # Load Autoformer scalers
+    scalers['autoformer_weather_scaler'] = joblib.load(
+        os.path.join(AUTOFORMER_DIR, 'autoformer_weather_scaler.pkl')
+    )
+    scalers['autoformer_power_scaler'] = joblib.load(
+        os.path.join(AUTOFORMER_DIR, 'autoformer_power_scaler.pkl')
+    )
+    print("✓ Autoformer scalers loaded successfully")
+
+    # Load climatology lookup tables (needed for future weather proxy)
+    climatology['clim_table'] = np.load(
+        os.path.join(AUTOFORMER_DIR, 'clim_table.npy')
+    )
+    climatology['clim_valid'] = np.load(
+        os.path.join(AUTOFORMER_DIR, 'clim_valid.npy')
+    )
+    climatology['clim_global_mean'] = np.load(
+        os.path.join(AUTOFORMER_DIR, 'clim_global_mean.npy')
+    )
+    print("✓ Climatology data loaded successfully")
     
-    return models, scalers
+    return models, scalers, climatology
