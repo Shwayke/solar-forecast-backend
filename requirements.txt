@@ -3,15 +3,15 @@ flask==3.0.0
 flask-cors==4.0.0
 
 # Data Processing
-pandas==2.1.4
-numpy==1.24.3
+pandas==2.2.2
+numpy==2.0.2
 
 # Machine Learning - PyTorch
 torch==2.1.2
 transformers==4.36.2
 
 # Machine Learning - TensorFlow/Keras
-tensorflow==2.13.0
+tensorflow==2.19.0
 
 # Utilities
 python-dotenv==1.0.0
