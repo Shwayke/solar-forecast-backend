@@ -11,7 +11,7 @@ torch==2.1.2
 transformers==4.36.2
 
 # Machine Learning - TensorFlow/Keras
-tensorflow==2.15.0
+tensorflow==2.13.0
 
 # Utilities
 python-dotenv==1.0.0
