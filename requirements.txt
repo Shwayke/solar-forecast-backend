@@ -7,14 +7,14 @@ pandas==2.2.2
 numpy==2.0.2
 
 # Machine Learning - PyTorch
-torch==2.1.2
-transformers==4.36.2
+torch==2.9.1
+transformers==4.57.3
 
 # Machine Learning - TensorFlow/Keras
 tensorflow==2.19.0
 
 # Machine Learning - Scikit-learn
-scikit-learn==1.5.2
+scikit-learn==1.6.1
 
 # Utilities
 python-dotenv==1.0.0
