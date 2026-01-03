@@ -30,11 +30,25 @@ def load_models():
     scalers = {}
     climatology = {}
 
-    
-    # ===== Load GRU =====
+    # ===== Load GRU with Legacy Format =====
     print("Loading GRU...")
-    models['gru'] = keras.models.load_model(os.path.join(GRU_DIR, 'solar_gru_model.keras'))
-    print("✓ GRU loaded successfully")
+    try:
+        # Import legacy loader
+        from keras.saving import legacy_h5_format
+        
+        # Load using legacy format
+        models['gru'] = legacy_h5_format.load_model_from_hdf5(
+            os.path.join(GRU_DIR, 'solar_gru_model.keras')
+        )
+        print("✓ GRU loaded successfully (legacy format)")
+    except Exception as e:
+        print(f"Legacy loading failed: {e}")
+        # Try with compile=False as fallback
+        models['gru'] = keras.models.load_model(
+            os.path.join(GRU_DIR, 'solar_gru_model.keras'),
+            compile=False
+        )
+        print("✓ GRU loaded successfully (compile=False)")
     
     # Load the scalers that were saved during training
     with open(os.path.join(GRU_DIR, 'weather_scaler.pkl'), 'rb') as f:
@@ -47,18 +61,13 @@ def load_models():
     # ===== Load Autoformer =====
     print("Loading Autoformer...")
     
-    # Create the configuration
     model_config = AutoformerConfig(
         prediction_length=FORECAST_HOURS,
         context_length=LOOKBACK_HOURS,
-        
-        # Features
         num_time_features=NUM_TIME_FEATURES,
         num_static_categorical_features=1,
         cardinality=[1],
         embedding_dimension=[2],
-        
-        # Architecture
         d_model=MODEL_DIMENSION,
         encoder_layers=NUM_ENCODER_LAYERS,
         decoder_layers=NUM_DECODER_LAYERS,
@@ -66,29 +75,20 @@ def load_models():
         decoder_attention_heads=NUM_ATTENTION_HEADS,
         encoder_ffn_dim=FEEDFORWARD_DIMENSION,
         decoder_ffn_dim=FEEDFORWARD_DIMENSION,
-        
-        # Autoformer-specific
         autocorrelation_factor=AUTOCORRELATION_FACTOR,
         moving_average=MOVING_AVERAGE_WINDOW,
-        
-        # Regularization
         dropout=DROPOUT_RATE,
         attention_dropout=DROPOUT_RATE,
-        
-        # Distribution for probabilistic forecasting
         distribution_output="student_t",
-        
-        # Important lags
         lags_sequence=LAGS_SEQUENCE,
-        
         scaling=True,
     )
     
-    # Initialize model with config
     autoformer = AutoformerForPrediction(model_config)
-    
-    # Load trained weights
-    autoformer.load_state_dict(torch.load('models/autoformer.pth', map_location='cpu'))
+    autoformer.load_state_dict(torch.load(
+        os.path.join(AUTOFORMER_DIR, 'autoformer.pth'),
+        map_location='cpu'
+    ))
     autoformer.eval()
     
     models['autoformer'] = autoformer
@@ -103,7 +103,7 @@ def load_models():
     )
     print("✓ Autoformer scalers loaded successfully")
 
-    # Load climatology lookup tables (needed for future weather proxy)
+    # Load climatology lookup tables
     climatology['clim_table'] = np.load(
         os.path.join(AUTOFORMER_DIR, 'clim_table.npy')
     )
