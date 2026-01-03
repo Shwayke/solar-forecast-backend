@@ -6,7 +6,7 @@ import os
 from tensorflow import keras
 from transformers import AutoformerConfig, AutoformerForPrediction
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GRU_DIR = os.path.join(BASE_DIR, 'models', 'gru')
 AUTOFORMER_DIR = os.path.join(BASE_DIR, 'models', 'autoformer')
 
