@@ -6,9 +6,26 @@ from src.predictor import generate_predictions
 import os
 
 app = Flask(__name__)
-CORS(app)  # Allow requests from your React frontend
+# Configure CORS for Vercel frontend
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "http://localhost:3000",  # Local development
+            "https://*.vercel.app",    # All Vercel preview deployments
+            "https://your-actual-domain.vercel.app"  # Your production domain
+        ]
+    }
+})
 
 models, scalers, climatology = load_models()
+
+@app.route('/', methods=['GET'])
+def health_check():
+    """Health check endpoint for Cloud Run"""
+    return jsonify({
+        'status': 'healthy',
+        'models_loaded': models is not None
+    })
 
 @app.route('/api/predict', methods=['GET'])
 def predict():
@@ -32,5 +49,5 @@ def predict():
         }), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
