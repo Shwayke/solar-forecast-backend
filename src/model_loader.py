@@ -13,7 +13,7 @@ AUTOFORMER_DIR = os.path.join(BASE_DIR, 'models', 'autoformer')
 # Autoformer configuration constants
 LOOKBACK_HOURS = 336  # 14 days
 FORECAST_HOURS = 96   # 4 days
-NUM_TIME_FEATURES = 3  # hour, day_of_year, month
+NUM_TIME_FEATURES = 3 + len(weather_columns)  # hour, day_of_year, month, weather features
 MODEL_DIMENSION = 128
 NUM_ENCODER_LAYERS = 4
 NUM_DECODER_LAYERS = 2
@@ -22,7 +22,7 @@ FEEDFORWARD_DIMENSION = 512
 AUTOCORRELATION_FACTOR = 3
 MOVING_AVERAGE_WINDOW = 25
 DROPOUT_RATE = 0.1
-LAGS_SEQUENCE = [1, 2, 3, 24, 48, 168, 336]
+LAGS_SEQUENCE = [0]
 
 def load_models():
     """Load both Keras GRU and PyTorch Autoformer models"""
@@ -51,13 +51,13 @@ def load_models():
     model_config = AutoformerConfig(
         prediction_length=FORECAST_HOURS,
         context_length=LOOKBACK_HOURS,
-        
+
         # Features
         num_time_features=NUM_TIME_FEATURES,
         num_static_categorical_features=1,
         cardinality=[1],
         embedding_dimension=[2],
-        
+
         # Architecture
         d_model=MODEL_DIMENSION,
         encoder_layers=NUM_ENCODER_LAYERS,
@@ -66,22 +66,22 @@ def load_models():
         decoder_attention_heads=NUM_ATTENTION_HEADS,
         encoder_ffn_dim=FEEDFORWARD_DIMENSION,
         decoder_ffn_dim=FEEDFORWARD_DIMENSION,
-        
+
         # Autoformer-specific
         autocorrelation_factor=AUTOCORRELATION_FACTOR,
         moving_average=MOVING_AVERAGE_WINDOW,
-        
+
         # Regularization
         dropout=DROPOUT_RATE,
         attention_dropout=DROPOUT_RATE,
-        
+
         # Distribution for probabilistic forecasting
         distribution_output="student_t",
-        
-        # Important lags
+
+        #No lag sequence as theres no past PV data
         lags_sequence=LAGS_SEQUENCE,
-        
-        scaling=True,
+
+        scaling=False,
     )
     
     # Initialize model with config
