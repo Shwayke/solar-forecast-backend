@@ -88,7 +88,7 @@ def load_models():
     autoformer = AutoformerForPrediction(model_config)
     
     # Load trained weights
-    autoformer.load_state_dict(torch.load('models/autoformer.pth', map_location='cpu'))
+    autoformer.load_state_dict(torch.load(os.path.join(AUTOFORMER_DIR, 'autoformer.pth'), map_location='cpu'))
     autoformer.eval()
     
     models['autoformer'] = autoformer
