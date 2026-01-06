@@ -12,15 +12,21 @@ def predict_gru(model, data, weather_scaler, power_scaler):
     Returns:
         dict with forecast and metadata
     """
+    print("Preprocessing data for GRU...")
+
     # Preprocess
     gru_input = preprocess_for_gru(data, weather_scaler)
     
+    print("Generating GRU prediction...")
+
     # Predict
     prediction_normalized = model.predict(gru_input, verbose=0)
     
     # Denormalize
     prediction = power_scaler.inverse_transform(prediction_normalized).squeeze()
     
+    print("GRU prediction generated.")
+
     return {
         'forecast': prediction.tolist(),
         'lookback_hours': 72,

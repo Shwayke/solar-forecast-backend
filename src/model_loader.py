@@ -11,6 +11,8 @@ GRU_DIR = os.path.join(BASE_DIR, 'models', 'gru')
 AUTOFORMER_DIR = os.path.join(BASE_DIR, 'models', 'autoformer')
 
 # Autoformer configuration constants
+
+weather_columns = ['temperature', 'humidity', 'solar_radiation', 'wind_speed', 'wind_direction']
 LOOKBACK_HOURS = 336  # 14 days
 FORECAST_HOURS = 96   # 4 days
 NUM_TIME_FEATURES = 3 + len(weather_columns)  # hour, day_of_year, month, weather features
@@ -37,10 +39,10 @@ def load_models():
     print("✓ GRU loaded successfully")
     
     # Load the scalers that were saved during training
-    with open(os.path.join(GRU_DIR, 'weather_scaler.pkl'), 'rb') as f:
+    with open(os.path.join(GRU_DIR, 'gru_weather_scaler.pkl'), 'rb') as f:
         scalers['weather_scaler'] = pickle.load(f)
-    
-    with open(os.path.join(GRU_DIR, 'power_scaler.pkl'), 'rb') as f:
+
+    with open(os.path.join(GRU_DIR, 'gru_power_scaler.pkl'), 'rb') as f:
         scalers['power_scaler'] = pickle.load(f)
     
 
