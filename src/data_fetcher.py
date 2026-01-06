@@ -1,11 +1,13 @@
 import pandas as pd
 from ast import Dict
-import datetime
+from datetime import datetime, timedelta
 from typing import List
 from src.fetchers import AshalimStation, IMSWeatherAPI
 
 def fetch_data():
     """Fetch data from external API"""
+
+    print("Fetching data from IMS API...")
 
     api_client = IMSWeatherAPI()
 
@@ -13,7 +15,12 @@ def fetch_data():
 
     from_date, to_date = get_time_range()
 
+    print(f"Fetching data from {from_date} to {to_date}...")
+
     data = station_ashalim.get_normalized_data(from_date, to_date)
+
+    print(f"Fetched {len(data)} records.")
+
     return fill_data_gaps(data)
 
 
@@ -31,7 +38,7 @@ def get_time_range():
     end_time = now.replace(minute=minutes, second=0, microsecond=0)
     
     # Get time exactly 14 days prior
-    start_time = end_time - datetime.timedelta(days=14)
+    start_time = end_time - timedelta(days=14)
     
     return start_time, end_time
 
