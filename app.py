@@ -1,9 +1,12 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from src.data_fetcher import fetch_data
 from src.model_loader import load_models
 from src.predictor import generate_predictions
-import os
 
 app = Flask(__name__)
 # Configure CORS for Vercel frontend
