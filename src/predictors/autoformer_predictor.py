@@ -66,7 +66,7 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
     recent_data = data.iloc[-336:].copy()
     
     # Get timestamps
-    timestamps = pd.to_datetime(recent_data['timestamp'])
+    timestamps = pd.to_datetime(recent_data['date_time'])
     
     # ---- PAST WEATHER (last 336 hours) ----
     past_weather = recent_data[weather_columns].values

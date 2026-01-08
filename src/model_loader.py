@@ -40,10 +40,10 @@ def load_models():
     
     # Load the scalers that were saved during training
     with open(os.path.join(GRU_DIR, 'gru_weather_scaler.pkl'), 'rb') as f:
-        scalers['weather_scaler'] = pickle.load(f)
+        scalers['gru_weather_scaler'] = pickle.load(f)
 
     with open(os.path.join(GRU_DIR, 'gru_power_scaler.pkl'), 'rb') as f:
-        scalers['power_scaler'] = pickle.load(f)
+        scalers['gru_power_scaler'] = pickle.load(f)
     
 
     # ===== Load Autoformer =====
