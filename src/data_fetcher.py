@@ -2,7 +2,8 @@ import pandas as pd
 from ast import Dict
 from datetime import datetime, timedelta
 from typing import List
-from src.fetchers import AshalimStation, IMSWeatherAPI
+from src.fetchers.AshalimStation import AshalimStation
+from src.fetchers.IMSWeatherAPI import IMSWeatherAPI
 
 def fetch_data():
     """Fetch data from external API"""
@@ -69,5 +70,7 @@ def fill_data_gaps(data: List[Dict], max_gap_hours: int = 6) -> pd.DataFrame:
         
         # Step 3: Fallback - if still any NaN (shouldn't happen, but just in case)
         df[col] = df[col].fillna(df[col].mean())
+
+    df.reset_index(inplace=True)
     
     return df
