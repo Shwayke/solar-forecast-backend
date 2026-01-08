@@ -2,13 +2,12 @@ import requests
 import json
 from datetime import datetime
 from typing import Optional, Dict, List
-from src.config import API_URL, API_KEY
+from src.config import get_api_url, get_api_key
 
 class IMSWeatherAPI:
     """
     Client for the Israeli Meteorological Service (IMS) Weather Data API
     """
-    BASE_URL = API_URL
     def __init__(self):
         """
         Initialize the API client with your API token
@@ -16,8 +15,9 @@ class IMSWeatherAPI:
         Args:
             api_token: Your API token from IMS
         """
+        self.api_url = get_api_url()
         self.headers = {
-            "Authorization": f"ApiToken {API_KEY}"
+            "Authorization": f"ApiToken {get_api_key()}"
         }
 
     def get_hourly_data_by_date_range(self, station_id: int,
@@ -66,9 +66,9 @@ class IMSWeatherAPI:
         to_date = f"{to_year}/{to_month:02d}/{to_day:02d}"
 
         if channel_id:
-            url = f"{self.BASE_URL}/stations/{station_id}/data/{channel_id}?from={from_date}&to={to_date}"
+            url = f"{self.api_url}/stations/{station_id}/data/{channel_id}?from={from_date}&to={to_date}"
         else:
-            url = f"{self.BASE_URL}/stations/{station_id}/data?from={from_date}&to={to_date}"
+            url = f"{self.api_url}/stations/{station_id}/data?from={from_date}&to={to_date}"
 
         response = requests.get(url, headers=self.headers)
         response.raise_for_status()
