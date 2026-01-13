@@ -60,7 +60,7 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
         dict with tensors in Autoformer format
     """
     weather_columns = ['temperature', 'humidity', 'solar_radiation',
-                       'wind_speed', 'wind_direction']
+                       'wind_speed', 'wind_direction', 'pressure']
     
     # Extract last 336 hours
     recent_data = data.iloc[-336:].copy()
