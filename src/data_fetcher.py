@@ -54,7 +54,7 @@ def fill_data_gaps(data: List[Dict], max_gap_hours: int = 6) -> pd.DataFrame:
     df.set_index('date_time', inplace=True)
     df.sort_index(inplace=True)
     
-    numeric_cols = ['temperature', 'humidity', 'solar_radiation', 'wind_speed', 'wind_direction']
+    numeric_cols = ['temperature', 'humidity', 'solar_radiation', 'wind_speed', 'wind_direction', 'pressure']
     
     for col in numeric_cols:
         if col not in df.columns:

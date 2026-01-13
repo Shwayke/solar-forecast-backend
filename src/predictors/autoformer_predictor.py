@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from datetime import timedelta
 
-def predict_autoformer(model, data, weather_scaler, power_scaler, climatology):
+def predict_autoformer(model, data, max_pv_outputs, weather_scaler, power_scaler, climatology):
     """Generate 96-hour forecast using Autoformer model
     
     Args:
@@ -17,8 +17,9 @@ def predict_autoformer(model, data, weather_scaler, power_scaler, climatology):
         dict with forecast and metadata
     """
     # Preprocess
-    autoformer_input = preprocess_for_autoformer(
+    autoformer_input, max_pv_outputs = preprocess_for_autoformer(
         data, 
+        max_pv_outputs,
         weather_scaler,
         climatology['clim_table'],
         climatology['clim_valid'],
@@ -36,8 +37,7 @@ def predict_autoformer(model, data, weather_scaler, power_scaler, climatology):
     ).flatten()
     
     # Clip to valid range
-    max_capacity = power_scaler.data_max_[0]
-    prediction = np.clip(prediction, 0, max_capacity)
+    prediction = np.clip(prediction, 0, max_pv_outputs * 1.2)  # hard limit at the maximum possible output + 20%
     
     return {
         'forecast': prediction.tolist(),
@@ -46,11 +46,12 @@ def predict_autoformer(model, data, weather_scaler, power_scaler, climatology):
     }
 
 
-def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim_global_mean):
+def preprocess_for_autoformer(data, max_pv_outputs, weather_scaler, clim_table, clim_valid, clim_global_mean):
     """Convert raw data to format expected by Autoformer model
     
     Args:
         data: DataFrame with timestamp and weather columns (needs last 336 hours)
+        max_pv_outputs: Array of maximum possible PV outputs for each hour
         weather_scaler: StandardScaler fitted during training
         clim_table: Climatology lookup table (367, 24, 5)
         clim_valid: Climatology validity mask (367, 24)
@@ -59,11 +60,11 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
     Returns:
         dict with tensors in Autoformer format
     """
-    weather_columns = ['temperature', 'humidity', 'solar_radiation',
-                       'wind_speed', 'wind_direction', 'pressure']
+    weather_columns = ['temperature', 'humidity', 'solar_radiation', 'pressure']
     
     # Extract last 336 hours
     recent_data = data.iloc[-336:].copy()
+    max_pv_outputs = max_pv_outputs[-336:]
     
     # Get timestamps
     timestamps = pd.to_datetime(recent_data['date_time'])
@@ -135,12 +136,12 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
         'past_observed_mask': past_observed_mask
     }
     
-    return autoformer_input
+    return autoformer_input, max_pv_outputs
 
 
-# ============================================================================
-# CLIMATOLOGY HELPER FUNCTIONS
-# ============================================================================
+# ============================ #
+# CLIMATOLOGY HELPER FUNCTIONS #
+# ============================ #
 
 def alpha_exponential(lead_hours, alpha_end=0.2, horizon_hours=96):
     """Calculate exponential decay for weather blending"""
