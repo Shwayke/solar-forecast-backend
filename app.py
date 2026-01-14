@@ -15,7 +15,7 @@ CORS(app, resources={
         "origins": [
             "http://localhost:3000",  # Local development
             "https://*.vercel.app",    # All Vercel preview deployments
-            "https://your-actual-domain.vercel.app"  # Your production domain
+            "https://solar-forecast-frontend.vercel.app"  # Your production domain
         ]
     }
 })
