@@ -32,8 +32,7 @@ class AshalimStation(BaseStation):
                 'temperature': channels_dict.get('TD'),  # TD = Temperature (Dew point or Temperature)
                 'humidity': channels_dict.get('RH'),  # RH = Relative Humidity
                 'solar_radiation': channels_dict.get('Grad'),  # Grad = Solar Radiation
-                'wind_speed': channels_dict.get('WS'),  # WS = Wind Speed
-                'wind_direction': channels_dict.get('WD')  # WD = Wind Direction
+                'pressure': channels_dict.get('BP'),  # BP = Pressure
             }
 
             normalized.append(normalized_record)

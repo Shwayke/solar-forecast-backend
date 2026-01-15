@@ -12,7 +12,7 @@ AUTOFORMER_DIR = os.path.join(BASE_DIR, 'models', 'autoformer')
 
 # Autoformer configuration constants
 
-weather_columns = ['temperature', 'humidity', 'solar_radiation', 'wind_speed', 'wind_direction']
+weather_columns = ['temperature', 'humidity', 'solar_radiation', 'pressure']
 LOOKBACK_HOURS = 336  # 14 days
 FORECAST_HOURS = 96   # 4 days
 NUM_TIME_FEATURES = 3 + len(weather_columns)  # hour, day_of_year, month, weather features
