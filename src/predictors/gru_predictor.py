@@ -16,7 +16,7 @@ def predict_gru(model, data, max_pv_outputs, weather_scaler, power_scaler):
     print("Preprocessing data for GRU...")
 
     # Preprocess
-    gru_input, max_pv_outputs = preprocess_for_gru(data, weather_scaler, max_pv_outputs)
+    gru_input = preprocess_for_gru(data, weather_scaler)
 
     print("Generating GRU prediction...")
 
@@ -43,12 +43,13 @@ def preprocess_for_gru(data, weather_scaler):
     Args:
         data: DataFrame with weather data (needs last 72 hours)
         weather_scaler: StandardScaler fitted during training
-    
+        max_pv_outputs: Array of maximum possible PV outputs for each hour
+
     Returns:
         numpy array of shape (1, 72, 6) - batch_size, timesteps, weather_features
     """
 
-    data = add_cyclic_time_features(data, max_pv_outputs)
+    data = add_cyclic_time_features(data)
     
     core_weather = ['temperature', 'humidity', 'solar_radiation', 'pressure']
     time_features = ['hour_sin', 'hour_cos', 'day_sin', 'day_cos', 'month_sin', 'month_cos']
@@ -56,7 +57,6 @@ def preprocess_for_gru(data, weather_scaler):
 
     # Extract last 72 hours of weather data
     weather_data = data[weather_columns].values[-72:]
-    max_pv_outputs = max_pv_outputs[-72:]
     
     # Normalize using the same scaler from training
     weather_normalized = weather_scaler.transform(weather_data)
@@ -64,7 +64,7 @@ def preprocess_for_gru(data, weather_scaler):
     # Reshape to (batch size = 1, lookback hours = 72, features = number of weather features)
     gru_input = weather_normalized.reshape(1, 72, len(weather_columns))
     
-    return gru_input, max_pv_outputs
+    return gru_input
 
 def add_cyclic_time_features(df):
     """

@@ -19,7 +19,6 @@ def predict_autoformer(model, data, max_pv_outputs, weather_scaler, power_scaler
     # Preprocess
     autoformer_input, max_pv_outputs = preprocess_for_autoformer(
         data, 
-        max_pv_outputs,
         weather_scaler,
         climatology['clim_table'],
         climatology['clim_valid'],
@@ -46,12 +45,11 @@ def predict_autoformer(model, data, max_pv_outputs, weather_scaler, power_scaler
     }
 
 
-def preprocess_for_autoformer(data, max_pv_outputs, weather_scaler, clim_table, clim_valid, clim_global_mean):
+def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim_global_mean):
     """Convert raw data to format expected by Autoformer model
     
     Args:
         data: DataFrame with timestamp and weather columns (needs last 336 hours)
-        max_pv_outputs: Array of maximum possible PV outputs for each hour
         weather_scaler: StandardScaler fitted during training
         clim_table: Climatology lookup table (367, 24, 5)
         clim_valid: Climatology validity mask (367, 24)
@@ -64,7 +62,6 @@ def preprocess_for_autoformer(data, max_pv_outputs, weather_scaler, clim_table, 
     
     # Extract last 336 hours
     recent_data = data.iloc[-336:].copy()
-    max_pv_outputs = max_pv_outputs[-336:]
     
     # Get timestamps
     timestamps = pd.to_datetime(recent_data['date_time'])
@@ -136,7 +133,7 @@ def preprocess_for_autoformer(data, max_pv_outputs, weather_scaler, clim_table, 
         'past_observed_mask': past_observed_mask
     }
     
-    return autoformer_input, max_pv_outputs
+    return autoformer_input
 
 
 # ============================ #
