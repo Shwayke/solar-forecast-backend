@@ -3,7 +3,7 @@ from src.predictors.autoformer_predictor import predict_autoformer
 from src.predictors.gru_predictor import predict_gru
 
 
-def generate_predictions(models, data, scalers, climatology):
+def generate_predictions(models, data, scalers, climatology, weather_proxy):
     """Generate predictions using both GRU and Autoformer models
     
     Args:
@@ -19,15 +19,15 @@ def generate_predictions(models, data, scalers, climatology):
     """
 
     # Calculate maximum possible pv outputs
-    solar_radiation = data['radiation'].values
-    temperature = data['temperature'].values
+    solar_radiation = weather_proxy['solar_radiation'].values
+    temperature = weather_proxy['temperature'].values
     max_pv_outputs = calculate_max_pv_outputs(solar_radiation, temperature)
 
     # Generate GRU prediction (24 hours)
     gru_result = predict_gru(
         model=models['gru'],
         data=data,
-        max_pv_outputs=max_pv_outputs,
+        max_pv_outputs=max_pv_outputs[:24],
         weather_scaler=scalers['gru_weather_scaler'],
         power_scaler=scalers['gru_power_scaler']
     )
