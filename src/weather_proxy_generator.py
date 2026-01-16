@@ -1,9 +1,8 @@
 import os
 import numpy as np
 import pandas as pd
+from src.model_loader import MODELS_DIR
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODELS_DIR = os.path.join(BASE_DIR, 'models')
 CLIMATOLOGY = pd.read_csv(os.path.join(MODELS_DIR, 'climatology.csv')).set_index(["day_of_year", "hour"])
 WEATHER_COLUMNS = ['temperature', 'humidity', 'solar_radiation', 'pressure']
 
@@ -12,7 +11,7 @@ def get_proxy(data):
     future_dates = pd.date_range(
         start=last_datetime + pd.Timedelta(hours=1),
         periods=96,  # 96 hours = 4 days
-        freq='H'
+        freq='h'
     )
     future_doy = future_dates.dayofyear.values
     future_hour = future_dates.hour.values
