@@ -135,7 +135,6 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
     
     return autoformer_input
 
-
 # ============================ #
 # CLIMATOLOGY HELPER FUNCTIONS #
 # ============================ #
