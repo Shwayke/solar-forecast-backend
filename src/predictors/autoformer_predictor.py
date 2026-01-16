@@ -17,7 +17,7 @@ def predict_autoformer(model, data, max_pv_outputs, weather_scaler, power_scaler
         dict with forecast and metadata
     """
     # Preprocess
-    autoformer_input, max_pv_outputs = preprocess_for_autoformer(
+    autoformer_input = preprocess_for_autoformer(
         data, 
         weather_scaler,
         climatology['clim_table'],
