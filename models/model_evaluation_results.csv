@@ -1,0 +1,3 @@
+Model,Success_Rate_%,Conditional_MAE
+gru,86.32155531553772,86.8394267461715
+autoformer,91.50212970596316,68.24028

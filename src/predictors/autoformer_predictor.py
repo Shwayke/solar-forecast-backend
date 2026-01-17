@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from datetime import timedelta
 
-def predict_autoformer(model, data, weather_scaler, power_scaler, climatology):
+def predict_autoformer(model, data, max_pv_outputs, weather_scaler, power_scaler, climatology):
     """Generate 96-hour forecast using Autoformer model
     
     Args:
@@ -36,8 +36,7 @@ def predict_autoformer(model, data, weather_scaler, power_scaler, climatology):
     ).flatten()
     
     # Clip to valid range
-    max_capacity = power_scaler.data_max_[0]
-    prediction = np.clip(prediction, 0, max_capacity)
+    prediction = np.clip(prediction, 0, max_pv_outputs * 1.2)  # hard limit at the maximum possible output + 20%
     
     return {
         'forecast': prediction.tolist(),
@@ -59,8 +58,7 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
     Returns:
         dict with tensors in Autoformer format
     """
-    weather_columns = ['temperature', 'humidity', 'solar_radiation',
-                       'wind_speed', 'wind_direction']
+    weather_columns = ['temperature', 'humidity', 'solar_radiation', 'pressure']
     
     # Extract last 336 hours
     recent_data = data.iloc[-336:].copy()
@@ -137,10 +135,9 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
     
     return autoformer_input
 
-
-# ============================================================================
-# CLIMATOLOGY HELPER FUNCTIONS
-# ============================================================================
+# ============================ #
+# CLIMATOLOGY HELPER FUNCTIONS #
+# ============================ #
 
 def alpha_exponential(lead_hours, alpha_end=0.2, horizon_hours=96):
     """Calculate exponential decay for weather blending"""

@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import joblib
 import pickle
 import torch
@@ -7,12 +8,13 @@ from tensorflow import keras
 from transformers import AutoformerConfig, AutoformerForPrediction
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-GRU_DIR = os.path.join(BASE_DIR, 'models', 'gru')
-AUTOFORMER_DIR = os.path.join(BASE_DIR, 'models', 'autoformer')
+MODELS_DIR = os.path.join(BASE_DIR, 'models')
+GRU_DIR = os.path.join(MODELS_DIR, 'gru')
+AUTOFORMER_DIR = os.path.join(MODELS_DIR, 'autoformer')
 
 # Autoformer configuration constants
 
-weather_columns = ['temperature', 'humidity', 'solar_radiation', 'wind_speed', 'wind_direction']
+weather_columns = ['temperature', 'humidity', 'solar_radiation', 'pressure']
 LOOKBACK_HOURS = 336  # 14 days
 FORECAST_HOURS = 96   # 4 days
 NUM_TIME_FEATURES = 3 + len(weather_columns)  # hour, day_of_year, month, weather features
@@ -118,3 +120,19 @@ def load_models():
     print("✓ Climatology data loaded successfully")
     
     return models, scalers, climatology
+
+def get_analytics():
+    """Load model evaluation results from CSV"""
+    df = pd.read_csv(os.path.join(MODELS_DIR, 'model_evaluation_results.csv'))
+    
+    # Create the result dictionary
+    result = {}
+    for _, row in df.iterrows():
+        model_name = row['Model'].strip().lower()
+        result[model_name] = {
+            'Success_Rate_%': row['Success_Rate_%'],
+            'Conditional_MAE': row['Conditional_MAE']
+        }
+
+    result['success'] = True
+    return result
