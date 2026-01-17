@@ -28,9 +28,6 @@ def fetch_data():
 def get_time_range():
     """
     Get current time rounded to last 10 minutes and 14 days prior.
-    
-    Returns:
-        tuple: (end_time, start_time) both as datetime objects
     """
     now = datetime.now()
     
@@ -46,8 +43,6 @@ def get_time_range():
 def fill_data_gaps(data: List[Dict], max_gap_hours: int = 6) -> pd.DataFrame:
     """
     Fill gaps in weather data using time-based interpolation.
-    Small gaps: interpolate
-    Large gaps: fill with hourly averages (same hour of day)
     """
     df = pd.DataFrame(data)
     df['date_time'] = pd.to_datetime(df['date_time'], utc=True)
@@ -60,15 +55,14 @@ def fill_data_gaps(data: List[Dict], max_gap_hours: int = 6) -> pd.DataFrame:
         if col not in df.columns:
             continue
             
-        # Step 1: Interpolate small gaps (up to max_gap_hours)
+        # Interpolate small gaps (up to max_gap_hours)
         df[col] = df[col].interpolate(method='time', limit=max_gap_hours)
         
-        # Step 2: Fill remaining with hourly averages
-        # (e.g., missing 2pm value gets average of all 2pm readings)
+        # Fill remaining with hourly averages
         hourly_avg = df.groupby(df.index.hour)[col].transform('mean')
         df[col] = df[col].fillna(hourly_avg)
         
-        # Step 3: Fallback - if still any NaN (shouldn't happen, but just in case)
+        # Fallback - if still any NaNs, fill with overall mean
         df[col] = df[col].fillna(df[col].mean())
 
     df.reset_index(inplace=True)

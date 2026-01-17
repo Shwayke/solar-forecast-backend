@@ -29,7 +29,7 @@ class AshalimStation(BaseStation):
             # Map the channels to standardized fields
             normalized_record = {
                 'date_time': datetime.fromisoformat(record.get('datetime')),
-                'temperature': channels_dict.get('TD'),  # TD = Temperature (Dew point or Temperature)
+                'temperature': channels_dict.get('TD'),  # TD = Temperature
                 'humidity': channels_dict.get('RH'),  # RH = Relative Humidity
                 'solar_radiation': channels_dict.get('Grad'),  # Grad = Solar Radiation
                 'pressure': channels_dict.get('BP'),  # BP = Pressure

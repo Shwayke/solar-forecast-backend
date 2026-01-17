@@ -8,11 +8,10 @@ def generate_predictions(models, data, scalers, climatology, weather_proxy):
     
     Args:
         models: dict with 'gru' and 'autoformer' models
-        data: DataFrame with columns ['timestamp', 'temperature', 'humidity', 
-              'solar_radiation', 'wind_speed', 'wind_direction', 'pressure']
-              Must have at least 336 hours for Autoformer
+        data: DataFrame with columns ['timestamp', 'temperature', 'humidity', 'solar_radiation', 'pressure']
         scalers: dict with scalers for both models
-        climatology: dict with 'clim_table', 'clim_valid', 'clim_global_mean'
+        climatology: dict with 'clim_table', 'clim_valid', 'clim_global_mean' for Autoformer
+        weather_proxy: DataFrame with future weather proxy for next 96 hours
     
     Returns:
         dict with predictions from both models

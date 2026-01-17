@@ -9,19 +9,19 @@ from src.model_loader import load_models, get_analytics
 from src.predictor import generate_predictions
 from src.weather_proxy_generator import get_proxy
 
+models, scalers, climatology = load_models()
+
 app = Flask(__name__)
-# Configure CORS for Vercel frontend
+# CORS for Vercel frontend
 CORS(app, resources={
     r"/*": {
         "origins": [
-            "http://localhost:3000",  # Local development
-            "https://*.vercel.app",    # All Vercel preview deployments
-            "https://solar-forecast-frontend.vercel.app"  # Your production domain
+            "http://localhost:3000",
+            "https://*.vercel.app",
+            "https://solar-forecast-frontend.vercel.app"
         ]
     }
 })
-
-models, scalers, climatology = load_models()
 
 @app.route('/', methods=['GET'])
 def health_check():
@@ -34,13 +34,16 @@ def health_check():
 @app.route('/api/predict', methods=['GET'])
 def predict():
     try:
-        # 1. Fetch fresh data from external API
+        # Fetch fresh data from external API
         data = fetch_data()
+
+        # Generate future weather proxy
         weather_proxy = get_proxy(data)
-        # 2. Generate predictions using loaded models
+
+        # Generate predictions using loaded models
         predictions = generate_predictions(models, data, scalers, climatology, weather_proxy)
         
-        # 3. Return predictions
+        # Return predictions
         return jsonify({
             'success': True,
             'predictions': predictions

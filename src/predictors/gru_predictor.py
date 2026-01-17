@@ -6,7 +6,7 @@ def predict_gru(model, data, max_pv_outputs, weather_scaler, power_scaler):
     
     Args:
         model: Trained Keras GRU model
-        data: DataFrame with weather data (needs last 72 hours)
+        data: DataFrame with weather data
         weather_scaler: StandardScaler for weather features
         power_scaler: MinMaxScaler for power output
     
@@ -46,7 +46,7 @@ def preprocess_for_gru(data, weather_scaler):
         max_pv_outputs: Array of maximum possible PV outputs for each hour
 
     Returns:
-        numpy array of shape (1, 72, 6) - batch_size, timesteps, weather_features
+        numpy array of shape (1, 72, number of weather features) - batch_size, timesteps, weather_features
     """
 
     data = add_cyclic_time_features(data)

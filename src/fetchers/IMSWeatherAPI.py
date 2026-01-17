@@ -10,10 +10,7 @@ class IMSWeatherAPI:
     """
     def __init__(self):
         """
-        Initialize the API client with your API token
-
-        Args:
-            api_token: Your API token from IMS
+        Initialize the API client with API token
         """
         self.api_url = get_api_url()
         self.headers = {

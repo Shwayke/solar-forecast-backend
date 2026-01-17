@@ -60,9 +60,8 @@ class BaseStation(ABC):
                 'timestamp': datetime,
                 'temperature': float,
                 'humidity': float,
-                'solar radiation': float
-                'wind_speed': float,
-                'wind_direction': float
+                'solar radiation': float,
+                'pressure': float
             }
         """
         pass

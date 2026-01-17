@@ -10,7 +10,7 @@ def get_proxy(data):
     last_datetime = pd.to_datetime(data['date_time'].iloc[-1])
     future_dates = pd.date_range(
         start=last_datetime + pd.Timedelta(hours=1),
-        periods=96,  # 96 hours = 4 days
+        periods=96,  # 4 days
         freq='h'
     )
     future_doy = future_dates.dayofyear.values
@@ -18,10 +18,7 @@ def get_proxy(data):
 
     proxy = make_future_weather_proxy(
         future_doy=future_doy,
-        future_hour=future_hour,
-        step_minutes=60,
-        alpha_end=0.2,
-        horizon_hours=96
+        future_hour=future_hour
     )
 
     return pd.DataFrame(
@@ -30,15 +27,10 @@ def get_proxy(data):
         index=future_dates
     )
 
-def make_future_weather_proxy(
-    future_doy, future_hour,
-    step_minutes=60, alpha_end=0.2, horizon_hours=96
-):
+def make_future_weather_proxy(future_doy, future_hour):
     """
-    last_weather: (W,) array or dict - last observed weather
-    future_doy, future_hour: (H,) arrays - day of year and hour for forecast
-    climatology_df: pandas DataFrame indexed by (day_of_year, hour)
-    returns: (H, W) array or DataFrame
+    future_doy, future_hour: arrays - day of year and hour for forecast
+    returns: array or DataFrame
     """
     # Get global mean for fallback
     global_mean = CLIMATOLOGY.mean().values
@@ -54,6 +46,6 @@ def make_future_weather_proxy(
             clim_vec = global_mean
         clim_vecs.append(clim_vec)
     
-    proxy = np.array(clim_vecs)  # (H, W)
+    proxy = np.array(clim_vecs)
     
     return proxy

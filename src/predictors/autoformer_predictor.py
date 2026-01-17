@@ -8,7 +8,7 @@ def predict_autoformer(model, data, max_pv_outputs, weather_scaler, power_scaler
     
     Args:
         model: Trained PyTorch Autoformer model
-        data: DataFrame with weather data (needs last 336 hours)
+        data: DataFrame with weather data
         weather_scaler: StandardScaler for weather features
         power_scaler: MinMaxScaler for power output
         climatology: dict with 'clim_table', 'clim_valid', 'clim_global_mean'
@@ -51,9 +51,9 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
     Args:
         data: DataFrame with timestamp and weather columns (needs last 336 hours)
         weather_scaler: StandardScaler fitted during training
-        clim_table: Climatology lookup table (367, 24, 5)
-        clim_valid: Climatology validity mask (367, 24)
-        clim_global_mean: Global mean weather (5,)
+        clim_table: Climatology lookup table
+        clim_valid: Climatology validity mask
+        clim_global_mean: Global mean weather
     
     Returns:
         dict with tensors in Autoformer format
@@ -135,15 +135,10 @@ def preprocess_for_autoformer(data, weather_scaler, clim_table, clim_valid, clim
     
     return autoformer_input
 
-# ============================ #
-# CLIMATOLOGY HELPER FUNCTIONS #
-# ============================ #
-
 def alpha_exponential(lead_hours, alpha_end=0.2, horizon_hours=96):
     """Calculate exponential decay for weather blending"""
     k = -np.log(alpha_end) / horizon_hours
     return np.exp(-k * lead_hours).astype(np.float32)
-
 
 def make_future_weather_proxy(
     last_weather, future_doy, future_hour,
@@ -154,14 +149,14 @@ def make_future_weather_proxy(
     Create future weather proxy by blending last observation with climatology
     
     Args:
-        last_weather: (W,) - last observed weather vector
-        future_doy, future_hour: (H,) - day of year and hour for forecast
-        clim_table: (367, 24, W) - climatology lookup table
-        clim_valid: (367, 24) - validity mask
-        clim_global_mean: (W,) - global mean weather
-    
+        last_weather: last observed weather vector
+        future_doy, future_hour: day of year and hour for forecast
+        clim_table: climatology lookup table
+        clim_valid: validity mask
+        clim_global_mean: global mean weather
+
     Returns:
-        (H, W) - proxy weather for forecast horizon
+        proxy weather for forecast horizon
     """
     future_doy = future_doy.astype(np.int16)
     future_hour = future_hour.astype(np.int8)
@@ -173,8 +168,8 @@ def make_future_weather_proxy(
     alphas = alpha_exponential(lead_hours, alpha_end=alpha_end, horizon_hours=horizon_hours).astype(np.float32)
     
     # Get climatology vectors for each future timestep
-    clim_vecs = clim_table[future_doy, future_hour, :]  # (H, W)
-    valid = clim_valid[future_doy, future_hour]          # (H,)
+    clim_vecs = clim_table[future_doy, future_hour, :] 
+    valid = clim_valid[future_doy, future_hour]
     
     # Replace missing climatology with global mean
     if not valid.all():

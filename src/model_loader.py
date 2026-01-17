@@ -107,7 +107,7 @@ def load_models():
     )
     print("✓ Autoformer scalers loaded successfully")
 
-    # Load climatology lookup tables (needed for future weather proxy)
+    # Load autoformer specific climatology lookup tables
     climatology['clim_table'] = np.load(
         os.path.join(AUTOFORMER_DIR, 'clim_table.npy')
     )
