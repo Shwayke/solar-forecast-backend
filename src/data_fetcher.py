@@ -1,6 +1,7 @@
 import pandas as pd
 from ast import Dict
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from typing import List
 from src.fetchers.AshalimStation import AshalimStation
 from src.fetchers.IMSWeatherAPI import IMSWeatherAPI
@@ -29,7 +30,8 @@ def get_time_range():
     """
     Get current time rounded to last 10 minutes and 14 days prior.
     """
-    now = datetime.now()
+    israel_tz = ZoneInfo('Asia/Jerusalem')
+    now = datetime.now(israel_tz)
     
     # Round down to last 10-minute interval
     minutes = (now.minute // 10) * 10
