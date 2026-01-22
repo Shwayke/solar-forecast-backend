@@ -38,7 +38,7 @@ def get_time_range():
     end_time = now.replace(minute=minutes, second=0, microsecond=0)
     
     # Get time exactly 14 days prior
-    start_time = end_time - timedelta(days=14)
+    start_time = end_time - timedelta(days=15)
     
     return start_time, end_time
 
