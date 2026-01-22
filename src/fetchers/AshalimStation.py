@@ -11,6 +11,19 @@ class AshalimStation(BaseStation):
     def get_normalized_data(self, from_date: datetime, to_date: datetime) -> List[Dict]:
         """Get normalized data for Station 381"""
         raw_data = self.get_raw_data(from_date, to_date)
+
+        # Calculate how many hours to skip from start and end
+        hours_to_skip_start = from_date.hour
+        hours_to_skip_end = 23 - to_date.hour
+        
+        # Filter the data list
+        if 'data' in raw_data and isinstance(raw_data['data'], list):
+            if hours_to_skip_end == 0:
+                raw_data['data'] = raw_data['data'][hours_to_skip_start:]
+            else:
+                raw_data['data'] = raw_data['data'][hours_to_skip_start:-hours_to_skip_end]
+        
+
         return self._parse_station_data(raw_data)
 
     def _parse_station_data(self, raw_data: Dict) -> List[Dict]:
