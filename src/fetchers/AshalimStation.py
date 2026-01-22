@@ -11,6 +11,7 @@ class AshalimStation(BaseStation):
     def get_normalized_data(self, from_date: datetime, to_date: datetime) -> List[Dict]:
         """Get normalized data for Station 381"""
         raw_data = self.get_raw_data(from_date, to_date)
+
         return self._parse_station_data(raw_data)
 
     def _parse_station_data(self, raw_data: Dict) -> List[Dict]:
